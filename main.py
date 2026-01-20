@@ -36,7 +36,7 @@ def analyze_game(req: GameRequest):
     game = chess.pgn.read_game(pgn)
     board = game.board()
 
-    engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+    engine = chess.engine.SimpleEngine.popen_uci("stockfish")
 
     board = game.board()
 
@@ -194,4 +194,5 @@ def analyze_game(req: GameRequest):
   "username": req.username,
   "color": "white" if your_color == chess.WHITE else "black"
     }
+
 }
