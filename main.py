@@ -24,6 +24,17 @@ class GameRequest(BaseModel):
     username: str
 
 @app.post("/analyze")
+def acpl_to_accuracy(acpl: float) -> float:
+    if acpl < 20:
+        return 95
+    if acpl < 50:
+        return 85
+    if acpl < 100:
+        return 70
+    if acpl < 200:
+        return 50
+    return 30
+
 def analyze_game(req: GameRequest):
     username = req.username
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -210,6 +221,7 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
 from fastapi.middleware.cors import CORSMiddleware
+
 
 
 
