@@ -19,25 +19,6 @@ class GameRequest(BaseModel):
 def analyze_game(req: GameRequest):
     print("Received:", req.dict())
     username = req.username
-    # Your chess analysis logic here
-    return {"received": username}
-
-def acpl_to_accuracy(acpl: float) -> float:
-    if acpl < 20:
-        return 95
-    if acpl < 50:
-        return 85
-    if acpl < 100:
-        return 70
-    if acpl < 200:
-        return 50
-    return 30
-
-def acpl_to_rating(acpl): #Based off stockfish data
-    return int(2500 / (1 + 0.02 * acpl))
-    
-def analyze_game(req: GameRequest):
-    username = req.username
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
                   "Chrome/120.0.0.0 Safari/537.36"}
@@ -214,14 +195,34 @@ def analyze_game(req: GameRequest):
   "username": req.username,
   "color": "white" if your_color == chess.WHITE else "black"
     }
+    }
+    return {"received": username}
 
-}
+def acpl_to_accuracy(acpl: float) -> float:
+    if acpl < 20:
+        return 95
+    if acpl < 50:
+        return 85
+    if acpl < 100:
+        return 70
+    if acpl < 200:
+        return 50
+    return 30
+
+def acpl_to_rating(acpl): #Based off stockfish data
+    return int(2500 / (1 + 0.02 * acpl))
+    
+def analyze_game(req: GameRequest):
+    username = req.username
+    
+
 if __name__ == "__main__":
     import os
     import uvicorn
 
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
 
 
 
