@@ -1,10 +1,13 @@
-if __name__ == "__main__":
-    import os
-    import uvicorn
-
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+import requests
+import io
+import chess
+import chess.engine
+import chess.pgn
+import os
 
 app = FastAPI()
 
@@ -16,14 +19,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-from fastapi import FastAPI
-from pydantic import BaseModel
-import requests          
-import io
-import chess
-import chess.engine
-import chess.pgn
-
 
 class GameRequest(BaseModel):
     username: str
@@ -207,4 +202,12 @@ def analyze_game(req: GameRequest):
     }
 
 }
+if __name__ == "__main__":
+    import os
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+from fastapi.middleware.cors import CORSMiddleware
+
 
