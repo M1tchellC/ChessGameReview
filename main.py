@@ -42,7 +42,8 @@ def analyze_game(req: GameRequest):
     game = chess.pgn.read_game(pgn)
     board = game.board()
 
-    engine = chess.engine.SimpleEngine.popen_uci("stockfish")
+    enginePath = "./engine/stockfish"
+    engine = chess.engine.SimpleEngine.popen_uci(enginePath)
 
     board = game.board()
 
@@ -209,5 +210,6 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
 from fastapi.middleware.cors import CORSMiddleware
+
 
 
