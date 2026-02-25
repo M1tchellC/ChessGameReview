@@ -46,6 +46,7 @@ async function analyze() {
     breakdownDiv.innerHTML = `
     <h3>Move Quality Breakdown</h3>
     <ul>
+      <li>${username} played: ${data.you.color}</li>
       <li>White Best: ${b.wtotBest}</li>
       <li>White Excellent: ${b.wtotExcellent}</li>
       <li>White Great: ${b.wtotGreat}</li>
@@ -67,6 +68,7 @@ async function analyze() {
     console.error("Fetch failed:", err);
   }
 }
+
 
 
 
