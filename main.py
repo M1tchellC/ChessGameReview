@@ -110,6 +110,54 @@ def analyze_game(req: GameRequest):
         # --- Push move ---
         board.push(move)
         color_just_moved = not board.turn
+        
+        # --- Handle Game Over Explicitly ---
+        if board.is_game_over():
+            result = board.result()
+        
+            if result == "1-0":
+                eval_cp = 10.0
+            elif result == "0-1":
+                eval_cp = -10.0
+            else:  # draw
+                eval_cp = 0.0
+        
+            evaluations.append(eval_cp)
+        
+            # Update ACPL tracking one last time
+            if color_just_moved == chess.WHITE:
+                loss = abs(prev_eval_white - eval_cp)
+                total_loss_white += loss
+                diff = prev_eval_white - eval_cp
+                prev_eval_white = eval_cp
+                side = "w"
+            else:
+                loss = abs(prev_eval_black - eval_cp)
+                total_loss_black += loss
+                diff = prev_eval_black - eval_cp
+                prev_eval_black = eval_cp
+                side = "b"
+        
+            # Label the final move
+            if diff == 0:
+                label = "Best"
+            elif diff <= 0.2:
+                label = "Excellent"
+            elif diff <= 0.5:
+                label = "Great"
+            elif diff <= 1.0:
+                label = "Good"
+            elif diff <= 2.0:
+                label = "Inaccuracy"
+            elif diff <= 4.0:
+                label = "Mistake"
+            else:
+                label = "Blunder"
+        
+            move_labels.append(label)
+            moves_made[f"{side}tot{label}"] += 1
+        
+            break
 
         # --- Evaluation AFTER move ---
         info = engine.analyse(board, chess.engine.Limit(depth=14))
@@ -217,16 +265,13 @@ def acpl_to_accuracy(acpl: float) -> float:
 def acpl_to_rating(acpl): #Based off stockfish data
     return int(2500 / (1 + 0.02 * acpl))
     
-def analyze_game(req: GameRequest):
-    username = req.username
-    
-
 if __name__ == "__main__":
     import os
     import uvicorn
 
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
 
 
 
