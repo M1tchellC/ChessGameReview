@@ -66,6 +66,7 @@ async function analyze() {
   } catch (err) {
     console.error("Fetch failed:", err);
   }
+}
 
 
 
