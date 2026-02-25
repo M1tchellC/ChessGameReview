@@ -25,17 +25,21 @@ async function analyze() {
     if (data.you.color === "black") { //Plot advantage based on which color you played
       evals = evals.map(v => -v);
     }
-    Plotly.newPlot("chart", [{ //Plot centipawn advantage
-      x: moves,
-      y: evals,
-      type: "scatter",
-      mode: "lines+markers",
-      name: "Centipawn Advantage"
-    }, {
-      title: "Centipawn Advantage Over Time",
-      xaxis: { title: "Move Number" },
-      yaxis: { title: "Evaluation (pawns)" }
-    });
+    Plotly.newPlot(
+      "chart", 
+      [{ //Plot centipawn advantage
+        x: moves,
+        y: evals,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Centipawn Advantage"
+    }], 
+      {
+        title: "Centipawn Advantage Over Time",
+        xaxis: { title: "Move Number" },
+        yaxis: { title: "Evaluation (pawns)" }
+      }
+    );
     const breakdownDiv = document.getElementById("breakdown"); //Plot how many of each move tyoe was made (Good, Great, etc...)
     const b = data.move_breakdown;
     
@@ -62,6 +66,7 @@ async function analyze() {
   } catch (err) {
     console.error("Fetch failed:", err);
   }
+
 
 
 
