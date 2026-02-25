@@ -113,7 +113,7 @@ def analyze_game(req: GameRequest):
 
         # --- Evaluation AFTER move ---
         info = engine.analyse(board, chess.engine.Limit(depth=14))
-        score_obj = info["score"].pov(color_just_moved)
+        score_obj = info["score"].pov(chess.WHITE)
 
         if score_obj.is_mate():
             eval_cp = 10.0 if score_obj.mate() >= 0 else -10.0
@@ -227,6 +227,7 @@ if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
 
 
 
