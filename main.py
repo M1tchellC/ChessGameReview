@@ -23,18 +23,70 @@ class GameRequest(BaseModel):
 @app.post("/analyze")
 def analyze_game(req: GameRequest):
     print("Received:", req.dict())
-    username = req.username
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                  "AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/120.0.0.0 Safari/537.36"}
-    archives = requests.get(
-    f"https://api.chess.com/pub/player/{username}/games/archives",
-    headers=headers
-    ).json()["archives"]
 
-    latest_month_url = archives[-1]
-    games = requests.get(latest_month_url, headers=headers).json()["games"]
-    latest_game_pgn = games[-1]["pgn"]
+    username = req.username
+
+    headers = {
+        "User-Agent": "ChessGameReviewTool/1.0"
+    }
+
+    # Get available game archives
+    archives_url = (
+        f"https://api.chess.com/pub/player/{username}/games/archives"
+    )
+
+    archives_response = requests.get(
+        archives_url,
+        headers=headers,
+        timeout=10
+    )
+
+    print("Archives status:", archives_response.status_code)
+    print("Archives URL:", archives_response.url)
+    print("Archives response:", archives_response.text[:500])
+
+    archives_response.raise_for_status()
+
+    archives = archives_response.json().get("archives", [])
+
+    if not archives:
+        return {
+            "error": f"No game archives found for {username}"
+        }
+
+    # Find newest archive containing a game
+    latest_game_pgn = None
+
+    for archive_url in reversed(archives):
+
+        print("Checking archive:", archive_url)
+
+        response = requests.get(
+            archive_url,
+            headers=headers,
+            timeout=10
+        )
+
+        print("Archive status:", response.status_code)
+
+        response.raise_for_status()
+
+        games = response.json().get("games", [])
+
+        print("Games found:", len(games))
+
+        if games:
+            latest_game_pgn = games[-1].get("pgn")
+
+            if latest_game_pgn:
+                break
+
+    if not latest_game_pgn:
+        return {
+            "error": f"No playable games found for {username}"
+        }
+
+    print("Successfully retrieved latest PGN")
 
     pgn = io.StringIO(latest_game_pgn)
     game = chess.pgn.read_game(pgn)
